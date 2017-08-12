@@ -13,6 +13,7 @@ use SumoCoders\Teamleader\Users\User;
 use SumoCoders\Teamleader\Notes\Note;
 use SumoCoders\Teamleader\Products\Product;
 use \SumoCoders\Teamleader\CustomFields\CustomField;
+use SumoCoders\Teamleader\Meetings\Meeting;
 
 /**
  * Teamleader class
@@ -1272,5 +1273,19 @@ class Teamleader
         }
 
         return Product::initializeWithRawData($rawData);
+    }
+    
+    public function getMeeting($id){
+    	$fields = array();
+    	$fields['meeting_id'] = (int) $id;
+    	
+		$rawData = $this->doCall('getMeeting.php', $fields);
+        // validate response
+        if (!is_array($rawData)) {
+            throw new Exception($rawData);
+        }
+
+        return Meeting::initializeWithRawData($rawData);
+    	
     }
 }
