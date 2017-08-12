@@ -1,8 +1,8 @@
 {
-	"name": "sumocoders/teamleader",
+	"name": "karelvw/teamleader",
 	"type": "library",
 	"description": "PHP Teamleader is a (wrapper)class to communicate with Teamleader (http://www.teamleader.be).",
-	"homepage": "https://github.com/sumocoders/Teamleader",
+	"homepage": "https://github.com/karelvw/teamleader",
 	"license": "BSD",
 	"authors": [
 		{
