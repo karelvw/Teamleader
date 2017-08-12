@@ -98,6 +98,12 @@ class Meeting
     /**
      * @var array
      */
+    private $attending_external;
+
+
+    /**
+     * @var array
+     */
     private $customFields;
 
     /**
@@ -348,6 +354,7 @@ class Meeting
      * Get a single custom field
      *
      * @param string $id
+     * @return string
      */
     public function getCustomField($id)
     {
@@ -371,12 +378,29 @@ class Meeting
     }
 
     /**
-     * @param array $attending_internal
+     * @param array $value
      */
     public function setAttendingInternal($value)
     {
         $this->attending_internal[] = $value;
     }
+
+    /**
+     * @return array
+     */
+    public function getAttendingExternal()
+    {
+        return $this->attending_external;
+    }
+
+    /**
+     * @param array $value
+     */
+    public function setAttendingExternal($value)
+    {
+        $this->attending_external[] = $value;
+    }
+
 
 
     /**
@@ -417,6 +441,10 @@ class Meeting
 
                 case 'attending_internal':
                     foreach ($value as $i) { $item->setAttendingInternal($i); }
+                    break;
+
+                case 'attending_external':
+                    foreach ($value as $i) { $item->setAttendingExternal($i); }
                     break;
 
                 default:
