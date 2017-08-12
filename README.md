@@ -1,8 +1,10 @@
 # Teamleader class
 
+This is a fork from `sumocoders/teamleader` 
+
 ## Installation
 
-`composer require sumocoders/teamleader`
+`composer require karelvw/teamleader`
 
 ## Usage
 
