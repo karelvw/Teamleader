@@ -2,18 +2,18 @@
 
 namespace SumoCoders\Teamleader;
 
-use SumoCoders\Teamleader\Crm\Contact;
 use SumoCoders\Teamleader\Crm\Company;
-use SumoCoders\Teamleader\Invoices\Invoice;
-use SumoCoders\Teamleader\Invoices\Creditnote;
-use SumoCoders\Teamleader\Subscriptions\Subscription;
+use SumoCoders\Teamleader\Crm\Contact;
+use SumoCoders\Teamleader\CustomFields\CustomField;
 use SumoCoders\Teamleader\Deals\Deal;
 use SumoCoders\Teamleader\Departments\Department;
-use SumoCoders\Teamleader\Users\User;
+use SumoCoders\Teamleader\Invoices\Creditnote;
+use SumoCoders\Teamleader\Invoices\Invoice;
+use SumoCoders\Teamleader\Meetings\Meeting;
 use SumoCoders\Teamleader\Notes\Note;
 use SumoCoders\Teamleader\Products\Product;
-use \SumoCoders\Teamleader\CustomFields\CustomField;
-use SumoCoders\Teamleader\Meetings\Meeting;
+use SumoCoders\Teamleader\Subscriptions\Subscription;
+use SumoCoders\Teamleader\Users\User;
 
 /**
  * Teamleader class
@@ -75,7 +75,7 @@ class Teamleader
     /**
      * Create an instance
      *
-     * @param string $apiGroup  The apiGroup to use.
+     * @param string $apiGroup The apiGroup to use.
      * @param string $apiSecret The apiKey to use.
      */
     public function __construct($apiGroup, $apiSecret, $sslEnabled = true)
@@ -85,123 +85,26 @@ class Teamleader
         $this->setSslEnabled($sslEnabled);
     }
 
-    /**
-     * Get the timeout that will be used
-     *
-     * @return int
-     */
-    public function getTimeOut()
-    {
-        return (int) $this->timeOut;
-    }
-
     public function getTitle()
     {
         return $this->title;
     }
 
     /**
-     * Get the apiGroup
+     * Just a simple Hello World call
      *
      * @return string
      */
-    public function getApiGroup()
+    public function helloWorld()
     {
-        return $this->apiGroup;
-    }
-
-    /**
-     * Get the apiKey
-     *
-     * @return string
-     */
-    public function getApiSecret()
-    {
-        return (string) $this->apiSecret;
-    }
-
-    /**
-     * Get if ssl is enabled
-     *
-     * @return boolean
-     */
-    public function getSslEnabled()
-    {
-        return $this->sslEnabled;
-    }
-
-    /**
-     * Get the useragent that will be used.
-     * Our version will be prepended to yours.
-     * It will look like: "PHP Teamleader/<version> <your-user-agent>"
-     *
-     * @return string
-     */
-    public function getUserAgent()
-    {
-        return (string) 'PHP Teamleader/' . self::VERSION . ' ' . $this->userAgent;
-    }
-
-    /**
-     * Set the timeout
-     * After this time the request will stop.
-     * You should handle any errors triggered by this.
-     *
-     * @param $seconds int timeout in seconds.
-     */
-    public function setTimeOut($seconds)
-    {
-        $this->timeOut = (int) $seconds;
-    }
-
-    /**
-     * Set the apiGroup
-     *
-     * @param string $apiGroup
-     */
-    public function setApiGroup($apiGroup)
-    {
-        $this->apiGroup = $apiGroup;
-    }
-
-    /**
-     * Set the apiKey
-     *
-     * @param string $token
-     */
-    public function setApiSecret($token)
-    {
-        $this->apiSecret = (string) $token;
-    }
-
-    /**
-     * Set if ssl is enabled
-     *
-     * @param string $enabled
-     */
-    public function setSslEnabled($enabled)
-    {
-        $this->sslEnabled = (boolean) $enabled;
-    }
-
-    /**
-     * Set the user-agent for you application
-     * It will be appended to ours, the result will look like:
-     * "PHP Teamleader/<version> <your-user-agent>"
-     *
-     * @param $userAgent string user-agent, it should look like
-     *                   <app-name>/<app-version>.
-     */
-    public function setUserAgent($userAgent)
-    {
-        $this->userAgent = (string) $userAgent;
+        return $this->doCall('helloWorld.php');
     }
 
     /**
      * Make the call
      *
      * @param  string $endPoint The endpoint.
-     * @param  array  $fields   The fields that should be passed.
+     * @param  array $fields The fields that should be passed.
      * @return mixed
      */
     private function doCall($endPoint, array $fields = null)
@@ -227,7 +130,7 @@ class Teamleader
             $options[CURLOPT_SSL_VERIFYHOST] = false;
         }
         $options[CURLOPT_RETURNTRANSFER] = true;
-        $options[CURLOPT_TIMEOUT] = (int) $this->getTimeOut();
+        $options[CURLOPT_TIMEOUT] = (int)$this->getTimeOut();
 
         // init
         $curl = curl_init();
@@ -253,10 +156,10 @@ class Teamleader
             // attempt to extract a reason to show in the exception
             $json = @json_decode($response, true);
             if ($json !== false && isset($json['reason'])) {
-                throw new Exception('Teamleader '.$endPoint.' API returned statuscode 400 Bad Request. Reason: '.$json['reason']);
+                throw new Exception('Teamleader ' . $endPoint . ' API returned statuscode 400 Bad Request. Reason: ' . $json['reason']);
             } else {
                 // in case no JSON could be parsed, log the response in the exception
-                throw new Exception('Teamleader '.$endPoint.' API returned statuscode 400 Bad Request. Data returned: '.$response);
+                throw new Exception('Teamleader ' . $endPoint . ' API returned statuscode 400 Bad Request. Data returned: ' . $response);
             }
         }
 
@@ -282,13 +185,110 @@ class Teamleader
     }
 
     /**
-     * Just a simple Hello World call
+     * Get the apiGroup
      *
      * @return string
      */
-    public function helloWorld()
+    public function getApiGroup()
     {
-        return $this->doCall('helloWorld.php');
+        return $this->apiGroup;
+    }
+
+    /**
+     * Set the apiGroup
+     *
+     * @param string $apiGroup
+     */
+    public function setApiGroup($apiGroup)
+    {
+        $this->apiGroup = $apiGroup;
+    }
+
+    /**
+     * Get the apiKey
+     *
+     * @return string
+     */
+    public function getApiSecret()
+    {
+        return (string)$this->apiSecret;
+    }
+
+    /**
+     * Set the apiKey
+     *
+     * @param string $token
+     */
+    public function setApiSecret($token)
+    {
+        $this->apiSecret = (string)$token;
+    }
+
+    /**
+     * Get the useragent that will be used.
+     * Our version will be prepended to yours.
+     * It will look like: "PHP Teamleader/<version> <your-user-agent>"
+     *
+     * @return string
+     */
+    public function getUserAgent()
+    {
+        return (string)'PHP Teamleader/' . self::VERSION . ' ' . $this->userAgent;
+    }
+
+    /**
+     * Set the user-agent for you application
+     * It will be appended to ours, the result will look like:
+     * "PHP Teamleader/<version> <your-user-agent>"
+     *
+     * @param $userAgent string user-agent, it should look like
+     *                   <app-name>/<app-version>.
+     */
+    public function setUserAgent($userAgent)
+    {
+        $this->userAgent = (string)$userAgent;
+    }
+
+    /**
+     * Get if ssl is enabled
+     *
+     * @return boolean
+     */
+    public function getSslEnabled()
+    {
+        return $this->sslEnabled;
+    }
+
+    /**
+     * Set if ssl is enabled
+     *
+     * @param string $enabled
+     */
+    public function setSslEnabled($enabled)
+    {
+        $this->sslEnabled = (boolean)$enabled;
+    }
+
+    /**
+     * Get the timeout that will be used
+     *
+     * @return int
+     */
+    public function getTimeOut()
+    {
+        return (int)$this->timeOut;
+    }
+
+    /**
+     * Set the timeout
+     * After this time the request will stop.
+     * You should handle any errors triggered by this.
+     *
+     * @param $seconds int timeout in seconds.
+     */
+    public function setTimeOut($seconds)
+    {
+        $this->timeOut = (int)$seconds;
     }
 
     /**
@@ -338,7 +338,7 @@ class Teamleader
     /**
      * Add a contact
      *
-     * @param Contact    $contact
+     * @param Contact $contact
      * @param null|array $tagsToAdd Pass one or more tags. Existing tags
      *                                     will be reused, other tags will be
      *                                     automatically created for you and
@@ -360,7 +360,8 @@ class Teamleader
         $newsletter = false,
         $autoMergeByName = false,
         $autoMergeByEmail = false
-    ) {
+    )
+    {
         $fields = $contact->toArrayForApi();
         if ($tagsToAdd) {
             $fields['add_tag_by_string'] = implode(',', $tagsToAdd);
@@ -386,8 +387,8 @@ class Teamleader
      *
      * @todo    find a way to update the tags as the api expects
      *
-     * @param Contact    $contact
-     * @param bool       $trackChanges If true, all changes are logged and
+     * @param Contact $contact
+     * @param bool $trackChanges If true, all changes are logged and
      *                                  visible to users in the web-interface.
      * @param null|array $tagsToAdd Pass one or more tags. Existing tags
      *                                  will be reused, other tags will be
@@ -402,7 +403,8 @@ class Teamleader
         $trackChanges = true,
         array $tagsToAdd = null,
         array $tagsToRemove = null
-    ) {
+    )
+    {
         $fields = $contact->toArrayForApi();
         $fields['contact_id'] = $contact->getId();
         $fields['track_changes'] = ($trackChanges) ? 1 : 0;
@@ -421,17 +423,16 @@ class Teamleader
     /**
      * Delete a contact
      *
-     * @param int|Contact $contact	can be either an object of type "Contact" or a contact ID
+     * @param int|Contact $contact can be either an object of type "Contact" or a contact ID
      * @return bool
      */
-    public function crmDeleteContact(
-        $contact
-    ) {
+    public function crmDeleteContact($contact)
+    {
         if ($contact instanceof Contact) {
             $fields = $contact->toArrayForApi();
             $fields['contact_id'] = $contact->getId();
         } else {
-            $fields['contact_id'] = (int) $contact;
+            $fields['contact_id'] = (int)$contact;
         }
         $rawData = $this->doCall('deleteContact.php', $fields);
 
@@ -439,55 +440,15 @@ class Teamleader
     }
 
     /**
-     * Search for contacts
-     *
-     * @param int $amount The amount of contacts returned per
-     *                                   request (1-100)
-     * @param int         $page     The current page (first page is 0)
-     * @param string|null $searchBy A search string. Teamleader will try
-     *                                   to match each part of the string to
-     *                                   the forename, surname, company name
-     *                                   and email address.
-     * @param int|null $modifiedSince Teamleader will only return contacts
-     *                                   that have been added or modified
-     *                                   since that timestamp.
-     * @return array of Contact
-     */
-    public function crmGetContacts($amount = 100, $page = 0, $searchBy = null, $modifiedSince = null)
-    {
-        $fields = array();
-        $fields['amount'] = (int) $amount;
-        $fields['pageno'] = (int) $page;
-
-        if ($searchBy !== null) {
-            $fields['searchby'] = (string) $searchBy;
-        }
-        if ($modifiedSince !== null) {
-            $fields['modifiedsince'] = (int) $modifiedSince;
-        }
-
-        $rawData = $this->doCall('getContacts.php', $fields);
-        $return = array();
-
-        if (!empty($rawData)) {
-            foreach ($rawData as $row) {
-                $return[] = Contact::initializeWithRawData($row);
-            }
-        }
-
-        return $return;
-    }
-
-    /**
      * Fetch contacts related to a company
      *
-     * @param  int     $id The ID of the company
+     * @param  int $id The ID of the company
      * @return array   An array of contacts related to the company
      */
     public function crmGetContactsByCompany($id)
     {
         $fields = array();
-        $fields['company_id'] = (int) $id;
+        $fields['company_id'] = (int)$id;
 
         $rawData = $this->doCall('getContactsByCompany.php', $fields);
 
@@ -497,13 +458,13 @@ class Teamleader
     /**
      * Fetch information about a contact
      *
-     * @param  int     $id The ID of the contact
+     * @param  int $id The ID of the contact
      * @return Contact
      */
     public function crmGetContact($id)
     {
         $fields = array();
-        $fields['contact_id'] = (int) $id;
+        $fields['contact_id'] = (int)$id;
 
         $rawData = $this->doCall('getContact.php', $fields);
 
@@ -518,7 +479,7 @@ class Teamleader
     /**
      * Add a contact
      *
-     * @param Company    $company
+     * @param Company $company
      * @param null|array $tagsToAdd Pass one or more tags. Existing
      *                                       tags will be reused, other tags
      *                                       will be automatically created for
@@ -543,7 +504,8 @@ class Teamleader
         $autoMergeByName = false,
         $autoMergeByEmail = false,
         $autoMergeByVatCode = false
-    ) {
+    )
+    {
         $fields = $company->toArrayForApi();
         if ($tagsToAdd) {
             $fields['add_tag_by_string'] = implode(',', $tagsToAdd);
@@ -570,7 +532,7 @@ class Teamleader
      * @todo    find a way to update the tags as the api expects
      *
      * @param Company $company
-     * @param bool    $trackChanges If true, all changes are logged and
+     * @param bool $trackChanges If true, all changes are logged and
      *                                  visible to users in the web-interface.
      * @param null|array $tagsToAdd Pass one or more tags. Existing tags
      *                                  will be reused, other tags will be
@@ -585,7 +547,8 @@ class Teamleader
         $trackChanges = true,
         array $tagsToAdd = null,
         array $tagsToRemove = null
-    ) {
+    )
+    {
         $fields = $company->toArrayForApi();
         $fields['company_id'] = $company->getId();
         $fields['track_changes'] = ($trackChanges) ? 1 : 0;
@@ -604,17 +567,18 @@ class Teamleader
     /**
      * Delete a company
      *
-     * @param int|Company $company	can be either an object of type "Company" or a company Id
+     * @param int|Company $company can be either an object of type "Company" or a company Id
      * @return bool
      */
     public function crmDeleteCompany(
         $company
-    ) {
+    )
+    {
         if ($company instanceof Company) {
             $fields = $company->toArrayForApi();
             $fields['company_id'] = $company->getId();
         } else {
-            $fields['company_id'] = (int) $company;
+            $fields['company_id'] = (int)$company;
         }
         $rawData = $this->doCall('deleteCompany.php', $fields);
 
@@ -622,59 +586,15 @@ class Teamleader
     }
 
     /**
-     * Search for companies
-     *
-     * @param int $amount The amount of companies returned per
-     *                                   request (1-100)
-     * @param int         $page     The current page (first page is 0)
-     * @param string|null $searchBy A search string. Teamleader will try
-     *                                   to match each part of the string to
-     *                                   the company name
-     *                                   and email address.
-     * @param int|null $modifiedSince Teamleader will only return companies
-     *                                   that have been added or modified
-     *                                   since that timestamp.
-     * @param string|null $filterByTag Teamleader will only return companies with this tag.
-     * @return array of Company
-     */
-    public function crmGetCompanies($amount = 100, $page = 0, $searchBy = null, $modifiedSince = null, $filterByTag = null)
-    {
-        $fields = array();
-        $fields['amount'] = (int) $amount;
-        $fields['pageno'] = (int) $page;
-
-        if ($searchBy !== null) {
-            $fields['searchby'] = (string) $searchBy;
-        }
-        if ($modifiedSince !== null) {
-            $fields['modifiedsince'] = (int) $modifiedSince;
-        }
-        if ($filterByTag !== null) {
-            $fields['filter_by_tag'] = (string) $filterByTag;
-        }
-
-        $rawData = $this->doCall('getCompanies.php', $fields);
-        $return = array();
-
-        if (!empty($rawData)) {
-            foreach ($rawData as $row) {
-                $return[] = Company::initializeWithRawData($row);
-            }
-        }
-
-        return $return;
-    }
-
-    /**
      * Fetch information about a company
      *
-     * @param  int     $id The ID of the company
+     * @param  int $id The ID of the company
      * @return Contact
      */
     public function crmGetCompany($id)
     {
         $fields = array();
-        $fields['company_id'] = (int) $id;
+        $fields['company_id'] = (int)$id;
 
         $rawData = $this->doCall('getCompany.php', $fields);
 
@@ -700,41 +620,11 @@ class Teamleader
     }
 
     /**
-     * Get all existing customers
-     *
-     * @return array
-     */
-    public function crmGetAllCustomers()
-    {
-        $customers = array();
-
-        $customers['contacts'] = array();
-        $i = 0;
-        while ($i == 0 || (sizeof($customers['contacts']) != 0 && sizeof($customers['contacts']) % 100 == 0)) {
-            foreach ($this->crmGetContacts(100, $i) as $contact) {
-                $customers['contacts'][$contact->getId()] = $contact;
-            }
-            $i++;
-        }
-
-        $customers['companies'] = array();
-        $i = 0;
-        while ($i == 0 || (sizeof($customers['companies']) != 0 && sizeof($customers['companies']) % 100 == 0)) {
-            foreach ($this->crmGetCompanies(100, $i) as $company) {
-                $customers['companies'][$company->getId()] = $company;
-            }
-            $i++;
-        }
-
-        return $customers;
-    }
-
-    /**
      * Get all Custom fields by type: contact, company, sale, project, invoice, ticket, milestone, todo
      *
      * @return array
      */
-    public function crmGetAllCustomFields() 
+    public function crmGetAllCustomFields()
     {
         $custom_fields = array();
         $types = array('contact', 'company', 'sale', 'project', 'invoice', 'ticket', 'milestone', 'todo');
@@ -742,14 +632,14 @@ class Teamleader
         foreach ($types as $for) {
             $custom_fields[$for] = $this->crmGetCustomField($for);
         }
-   
+
         return $custom_fields;
     }
-    
-     /**
+
+    /**
      * Fetch information about custom field
      *
-     * @param  string   $for custom field type
+     * @param  string $for custom field type
      * @return CustomField
      */
     public function crmGetCustomField($for)
@@ -771,7 +661,7 @@ class Teamleader
     public function dealsGetDeal($id)
     {
         $fields = array();
-        $fields['deal_id'] = (int) $id;
+        $fields['deal_id'] = (int)$id;
 
         $rawData = $this->doCall('getDeal.php', $fields);
 
@@ -785,7 +675,7 @@ class Teamleader
         // We will just fake the id by inserting it ourselves. This if block may be removed when the api returns an id,
         // and everything should keep working.
         if (!isset($rawData['id'])) {
-            $rawData['id'] = (int) $id;
+            $rawData['id'] = (int)$id;
         }
 
         return Deal::initializeWithRawData($rawData);
@@ -794,28 +684,28 @@ class Teamleader
     /**
      * Search for deals
      *
-     * @param int    $amount    The amount of deals returned per request (1-100)
-     * @param int    $page      The current page (first page is 0)
-     * @param string $searchBy  A search string. Teamleader will try to search deals matching this string.
-     * @param int    $segmentId Teamleader will only return deals in this segment.
-     * @param int    $phaseId   Teamleader will return only deals that are in this phase right now.
+     * @param int $amount The amount of deals returned per request (1-100)
+     * @param int $page The current page (first page is 0)
+     * @param string $searchBy A search string. Teamleader will try to search deals matching this string.
+     * @param int $segmentId Teamleader will only return deals in this segment.
+     * @param int $phaseId Teamleader will return only deals that are in this phase right now.
      *
      * @return Deal
      */
     public function dealsGetDeals($amount = 100, $page = 0, $searchBy = null, $segmentId = null, $phaseId = null)
     {
         $fields = array();
-        $fields['amount'] = (int) $amount;
-        $fields['pageno'] = (int) $page;
+        $fields['amount'] = (int)$amount;
+        $fields['pageno'] = (int)$page;
 
         if ($searchBy !== null) {
-            $fields['searchby'] = (string) $searchBy;
+            $fields['searchby'] = (string)$searchBy;
         }
         if ($segmentId !== null) {
-            $fields['segment_id'] = (int) $segmentId;
+            $fields['segment_id'] = (int)$segmentId;
         }
         if ($phaseId !== null) {
-            $fields['filter_by_phase_id'] = (int) $phaseId;
+            $fields['filter_by_phase_id'] = (int)$phaseId;
         }
 
         $rawData = $this->doCall('getDeals.php', $fields);
@@ -863,7 +753,7 @@ class Teamleader
     public function dealsUpdateDeal(Deal $deal)
     {
         $fields = $deal->toArrayForApi(false);
-        $fields['deal_id'] = (int) $deal->getId();
+        $fields['deal_id'] = (int)$deal->getId();
 
         $this->doCall('updateDeal.php', $fields);
 
@@ -935,6 +825,120 @@ class Teamleader
     }
 
     /**
+     * Get all existing customers
+     *
+     * @return array
+     */
+    public function crmGetAllCustomers()
+    {
+        $customers = array();
+
+        $customers['contacts'] = array();
+        $i = 0;
+        while ($i == 0 || (sizeof($customers['contacts']) != 0 && sizeof($customers['contacts']) % 100 == 0)) {
+            foreach ($this->crmGetContacts(100, $i) as $contact) {
+                $customers['contacts'][$contact->getId()] = $contact;
+            }
+            $i++;
+        }
+
+        $customers['companies'] = array();
+        $i = 0;
+        while ($i == 0 || (sizeof($customers['companies']) != 0 && sizeof($customers['companies']) % 100 == 0)) {
+            foreach ($this->crmGetCompanies(100, $i) as $company) {
+                $customers['companies'][$company->getId()] = $company;
+            }
+            $i++;
+        }
+
+        return $customers;
+    }
+
+    /**
+     * Search for contacts
+     *
+     * @param int $amount The amount of contacts returned per
+     *                                   request (1-100)
+     * @param int $page The current page (first page is 0)
+     * @param string|null $searchBy A search string. Teamleader will try
+     *                                   to match each part of the string to
+     *                                   the forename, surname, company name
+     *                                   and email address.
+     * @param int|null $modifiedSince Teamleader will only return contacts
+     *                                   that have been added or modified
+     *                                   since that timestamp.
+     * @return array of Contact
+     */
+    public function crmGetContacts($amount = 100, $page = 0, $searchBy = null, $modifiedSince = null)
+    {
+        $fields = array();
+        $fields['amount'] = (int)$amount;
+        $fields['pageno'] = (int)$page;
+
+        if ($searchBy !== null) {
+            $fields['searchby'] = (string)$searchBy;
+        }
+        if ($modifiedSince !== null) {
+            $fields['modifiedsince'] = (int)$modifiedSince;
+        }
+
+        $rawData = $this->doCall('getContacts.php', $fields);
+        $return = array();
+
+        if (!empty($rawData)) {
+            foreach ($rawData as $row) {
+                $return[] = Contact::initializeWithRawData($row);
+            }
+        }
+
+        return $return;
+    }
+
+    /**
+     * Search for companies
+     *
+     * @param int $amount The amount of companies returned per
+     *                                   request (1-100)
+     * @param int $page The current page (first page is 0)
+     * @param string|null $searchBy A search string. Teamleader will try
+     *                                   to match each part of the string to
+     *                                   the company name
+     *                                   and email address.
+     * @param int|null $modifiedSince Teamleader will only return companies
+     *                                   that have been added or modified
+     *                                   since that timestamp.
+     * @param string|null $filterByTag Teamleader will only return companies with this tag.
+     * @return array of Company
+     */
+    public function crmGetCompanies($amount = 100, $page = 0, $searchBy = null, $modifiedSince = null, $filterByTag = null)
+    {
+        $fields = array();
+        $fields['amount'] = (int)$amount;
+        $fields['pageno'] = (int)$page;
+
+        if ($searchBy !== null) {
+            $fields['searchby'] = (string)$searchBy;
+        }
+        if ($modifiedSince !== null) {
+            $fields['modifiedsince'] = (int)$modifiedSince;
+        }
+        if ($filterByTag !== null) {
+            $fields['filter_by_tag'] = (string)$filterByTag;
+        }
+
+        $rawData = $this->doCall('getCompanies.php', $fields);
+        $return = array();
+
+        if (!empty($rawData)) {
+            foreach ($rawData as $row) {
+                $return[] = Company::initializeWithRawData($row);
+            }
+        }
+
+        return $return;
+    }
+
+    /**
      * Get a specific invoice by id
      *
      * @param int $id
@@ -943,7 +947,7 @@ class Teamleader
     public function invoicesGetInvoice($id)
     {
         $fields = array();
-        $fields['invoice_id'] = (int) $id;
+        $fields['invoice_id'] = (int)$id;
 
         $rawData = $this->doCall('getInvoice.php', $fields);
 
@@ -1036,7 +1040,8 @@ class Teamleader
         $dateTo,
         $contactOrCompany = null,
         $deepSearch = false
-    ) {
+    )
+    {
         $fields = array();
         $fields['date_from'] = date('d/m/Y', $dateFrom);
         $fields['date_to'] = date('d/m/Y', $dateTo);
@@ -1083,7 +1088,7 @@ class Teamleader
     public function invoicesGetCreditnote($id)
     {
         $fields = array();
-        $fields['creditnote_id'] = (int) $id;
+        $fields['creditnote_id'] = (int)$id;
 
         $rawData = $this->doCall('getCreditnote.php', $fields);
 
@@ -1166,7 +1171,7 @@ class Teamleader
     /**
      * Add a product
      *
-     * @param Product    $product
+     * @param Product $product
      * @return int
      */
     public function addProduct(Product $product)
@@ -1198,7 +1203,7 @@ class Teamleader
     /**
      * Delete a product
      *
-     * @param int|Product $product	can be either an object of type "Product" or a product Id
+     * @param int|Product $product can be either an object of type "Product" or a product Id
      * @return bool
      */
     public function deleteProduct($product)
@@ -1208,7 +1213,7 @@ class Teamleader
             $fields = $product->toArrayForApi();
             $fields['product_id'] = $product->getId();
         } else {
-            $fields['product_id'] = (int) $product;
+            $fields['product_id'] = (int)$product;
         }
         $rawData = $this->doCall('deleteProduct.php', $fields);
 
@@ -1220,7 +1225,7 @@ class Teamleader
      *
      * @param int $amount The amount of products returned per
      *                                   request (1-100)
-     * @param int         $page     The current page (first page is 0)
+     * @param int $page The current page (first page is 0)
      * @param string|null $searchBy A search string. Teamleader will try
      *                                   to match each part of the string to
      *                                   the product name
@@ -1233,14 +1238,14 @@ class Teamleader
     public function getProducts($amount = 100, $page = 0, $searchBy = null, $modifiedSince = null)
     {
         $fields = array();
-        $fields['amount'] = (int) $amount;
-        $fields['pageno'] = (int) $page;
+        $fields['amount'] = (int)$amount;
+        $fields['pageno'] = (int)$page;
 
         if ($searchBy !== null) {
-            $fields['searchby'] = (string) $searchBy;
+            $fields['searchby'] = (string)$searchBy;
         }
         if ($modifiedSince !== null) {
-            $fields['modifiedsince'] = (int) $modifiedSince;
+            $fields['modifiedsince'] = (int)$modifiedSince;
         }
         $rawData = $this->doCall('getProducts.php', $fields);
         $return = array();
@@ -1257,13 +1262,13 @@ class Teamleader
     /**
      * Fetch information about a product
      *
-     * @param  int     $id The ID of the product
+     * @param  int $id The ID of the product
      * @return product
      */
     public function getProduct($id)
     {
         $fields = array();
-        $fields['product_id'] = (int) $id;
+        $fields['product_id'] = (int)$id;
 
         $rawData = $this->doCall('getProduct.php', $fields);
 
@@ -1274,18 +1279,61 @@ class Teamleader
 
         return Product::initializeWithRawData($rawData);
     }
-    
-    public function getMeeting($id){
-    	$fields = array();
-    	$fields['meeting_id'] = (int) $id;
-    	
-		$rawData = $this->doCall('getMeeting.php', $fields);
+
+    public function getMeeting($id)
+    {
+        $fields = array();
+        $fields['meeting_id'] = (int)$id;
+
+        $rawData = $this->doCall('getMeeting.php', $fields);
         // validate response
         if (!is_array($rawData)) {
             throw new Exception($rawData);
         }
 
         return Meeting::initializeWithRawData($rawData);
-    	
+
     }
+
+
+    /**
+     * Add a meeting
+     *
+     * @param Meeting $meeting
+     * @return int
+     */
+    public function addMeeting(Meeting $meeting)
+    {
+        $fields = $meeting->toArrayForApi();
+
+        $id = $this->doCall('addMeeting.php', $fields);
+        $meeting->setId($id);
+
+        return $id;
+    }
+
+    public function addContactToMeeting(Meeting $meeting, Contact $contact){
+        $fields['meeting_id'] = $meeting->getId();
+        $fields['contact_id'] = $contact->getId();
+        $rawData = $this->doCall('addContactToMeeting.php', $fields);
+
+        if ($rawData == 'OK') {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function deleteMeeting($meeting){
+        if ($meeting instanceof Meeting) {
+            $fields['meeting_id'] = $meeting->getId();
+        } else {
+            $fields['contact_id'] = (int)$meeting;
+        }
+        $rawData = $this->doCall('deleteMeeting.php', $fields);
+
+        return (isset($rawData["status"]) && $rawData["status"] === "success");
+
+    }
+
 }

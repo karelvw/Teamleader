@@ -26,6 +26,7 @@ use SumoCoders\Teamleader\Teamleader;
 use SumoCoders\Teamleader\Crm\Contact;
 use SumoCoders\Teamleader\Crm\Company;
 use SumoCoders\Teamleader\Deals\Deal;
+use SumoCoders\Teamleader\Meetings\Meeting;
 use SumoCoders\Teamleader\Invoices\Invoice;
 use SumoCoders\Teamleader\Invoices\InvoiceLine;
 use SumoCoders\Teamleader\Invoices\Creditnote;
@@ -516,6 +517,19 @@ class TeamleaderTest extends \PHPUnit_Framework_TestCase
         $response = $this->teamleader->invoicesGetCreditnote($id);
 
         $this->assertInstanceOf('SumoCoders\Teamleader\Invoices\Creditnote', $response);
+    }
+
+    public function testMeetingsAddMeeting(){
+        $time = time();
+
+        $contact = new Contact();
+        $contact->setForename($time);
+        $contact->setSurname($time);
+        $contact->setEmail($time . '@example.com');
+        $id = $this->teamleader->crmAddContact($contact);
+        $contact->setId($id);
+
+        $meeting = new Meeting();
     }
 
     /**
