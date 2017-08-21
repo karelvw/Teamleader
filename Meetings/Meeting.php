@@ -20,6 +20,11 @@ class Meeting
     private $id;
 
     /**
+     * @var int
+     */
+    private $user_id;
+
+    /**
      * @var string
      */
     private $title;
@@ -121,6 +126,23 @@ class Meeting
     {
         $this->id = $id;
     }
+
+    /**
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
+     * @param int $user_id
+     */
+    public function setUserId($user_id)
+    {
+        $this->user_id = $user_id;
+    }
+
 
     /**
      * @return string
